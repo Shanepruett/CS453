@@ -7,7 +7,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <pwd.h>
-#include <List.h>
+//include <List.h>
 
 int parseString(char* line, char** args);
 void execute (char** args);
