@@ -24,7 +24,7 @@ all: $(PROGS)
 #	$(CC) $(CFLAGS) $(IFLAGS) -o $@ job.c $(LIBS)
 
 mydash: $(OBJECTS)
-	$(CC) $(CFLAGS) $(IFLAGS) -o ../$@  $< $(LIBS) $(CUSTOM_LIBS_DIR) $(CUSTOM_LIBS)
+	$(CC) $(CFLAGS) $(IFLAGS) -o ../$@  $(OBJECTS) $(LIBS) $(CUSTOM_LIBS_DIR) $(CUSTOM_LIBS)
 
 clean:
 	/bin/rm -f *.o $(PROGS) a.out core  *.log

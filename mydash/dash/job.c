@@ -4,55 +4,88 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "job.h"
+#include <common.h>
 
 
-void freeJob(job jobObj)
+
+
+JobPtr createJob(int number, pid_t id, char* comm)
+{
+	
+	JobPtr tempJob = malloc (sizeof(Job));
+	tempJob->jobNumber = number;
+	tempJob->pid = id;
+	tempJob->command = comm;
+
+	printf("inside createJob: %d/n",tempJob->jobNumber);	
+	return tempJob;
+}
+
+void freeJob(const void *jobObj)
 {
 
-	free(jobObj.command);
+	JobPtr object = (JobPtr) jobObj;
+	free(object->command);
+
 
 }
 
 
-void printJob(job jobObj)
+void printJob(const void *jobObj)
 {
-	printf("[%d] %d %s", jobObj.jobNumber, (int) jobObj.pid, jobObj.command); 
+
+	JobPtr object = (JobPtr) jobObj;
+	printf("[%d] %d %s", object->jobNumber, (int) object->pid, object->command); 
 
 }
 
-char *jobToString(job jobObj)
+char *jobToString(const void *jobObj)
 {
-	char* theString = "";
+	JobPtr object = (JobPtr) jobObj;
 
-	sprintf(theString,"[%d] %d %s", jobObj.jobNumber, (int) jobObj.pid, jobObj.command); 
 
+	//printf("inside tostring, starting sprintf: %s\n", object->command);
+	char* theString =(char*) malloc (sizeof(char) * (strlen(object->command) + 100));
+	//printf("after malloc\n");
+	sprintf(theString,"[%d] %d %s", object->jobNumber, (int) object->pid, object->command); 
+
+	//printf("past sprintf in tostring\n");
 	return theString;
 }
 
-int jobEqual(job this, job other)
+Boolean jobEqual(const void *object, const void *other)
 {
-	return this.pid == other.pid;
+	
+	JobPtr objectObj = (JobPtr) object;
+	JobPtr otherObj = (JobPtr) other;
+
+	return objectObj->pid == otherObj->pid;
 	
 }
 
 
-void printJobStatus(job jobObj)
+void printJobStatus(const void *jobObj)
 {
 	
+	JobPtr object = (JobPtr) jobObj;
 	if (jobDone(jobObj)){
 		
-		printf("[%d] Done %s", jobObj.jobNumber, jobObj.command); 
+		printf("[%d] Done %s\n", object->jobNumber, object->command); 
 	} 
 	else {
 
-		printf("[%d] Running %s", jobObj.jobNumber, jobObj.command); 
+		printf("[%d] Running %s\n", object->jobNumber, object->command); 
 	}
 
 }
 
-int jobDone(job jobObj){
-	int *statusPtr = 0;
-	waitpid(jobObj.pid, statusPtr, WNOHANG); 	
-	return WIFEXITED(statusPtr);
+int jobDone(const void *jobObj){
+	
+	JobPtr object = (JobPtr) jobObj;
+	int statusPtr = NULL;
+	return waitpid(object->pid, &statusPtr, WNOHANG); 	
+	//return WIFEXITED(statusPtr);
+
+
 }
 

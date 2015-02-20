@@ -229,25 +229,28 @@ void reverseList(ListPtr list)
 
 void printList(const ListPtr list)
 {
-	if (list) print(list->head, list->toString);
+	if (list && list->size > 0) print(list->head, list->toString);
 }
 
 static void print(const NodePtr node, char * (*toString)(const void *))
 {
-	int count = 0;
+
+	printf("inside printList/printi\n");
+	//int count = 0;
 	char *output;
 	NodePtr temp = node;
 	while (temp->next != node) {
 		output = (*toString)(temp->obj);
-		printf(" %s -->",output);
+		printf("%s\n",output);
 		free(output);
 		temp = temp->next;
-		count++;
-		if ((count % 6) == 0)
-			printf("\n");
+		//count++;
+		//if ((count % 6) == 0)
+		//	printf("\n");
 	}
-    output = (*toString)(temp->obj);
-    printf(" %s \n",output);
+    	output = (*toString)(temp->obj);
+   	 printf("%s\n",output);
+	free(output);
 }
  
 
