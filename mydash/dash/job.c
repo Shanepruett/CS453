@@ -17,7 +17,7 @@ JobPtr createJob(int number, pid_t id, char* comm)
 	tempJob->pid = id;
 	tempJob->command = comm;
 
-	printf("inside createJob: %d/n",tempJob->jobNumber);	
+	//printf("inside createJob: %d/n",tempJob->jobNumber);	
 	return tempJob;
 }
 

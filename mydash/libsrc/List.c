@@ -235,7 +235,7 @@ void printList(const ListPtr list)
 static void print(const NodePtr node, char * (*toString)(const void *))
 {
 
-	printf("inside printList/printi\n");
+	//printf("inside printList/printi\n");
 	//int count = 0;
 	char *output;
 	NodePtr temp = node;

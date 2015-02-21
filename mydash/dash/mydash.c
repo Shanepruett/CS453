@@ -17,7 +17,7 @@ void execute (char** args, int background,char* unmodLine, ListPtr list);
 void changeDirectory(char** args);
 void showVersion();
 void printDoneJobs(ListPtr list);
-
+void printAllJobs(ListPtr list);
 
 int main() {
 	
@@ -40,19 +40,20 @@ int main() {
 	using_history();
 	while ((line=readline(DASH_PROMPT))) {
 		if (line == NULL) break;
+		printDoneJobs(jobList);
 		if (*line)
 		{
-			printf("%s\n list size: %d\n",line,jobList->size);
+			//printf("%s\n list size: %d\n",line,jobList->size);
 			//printList(jobList);
-			printDoneJobs(jobList);
-			printf("made it past print List\n");
+			//printAllJobs(jobList);
+			//printf("made it past print List\n");
 			add_history(line);
 			if (line[strlen(line)-1] == '&'){
 				backgroundCheck = 1;
-				printf("about to strcpy\n");
+				//printf("about to strcpy\n");
 				unmodLine = malloc(sizeof(char) * (strlen(line)+1));
 				strcpy(unmodLine,line);
-				printf("made it past strcpy\n");
+				//printf("made it past strcpy\n");
 				line[strlen(line) - 1] = '\0';
 			}
 			parseString(line,args);
@@ -68,9 +69,15 @@ int main() {
 				free(line);
 				continue;
 			}
+			if (strcmp(args[0], "jobs") == 0){
+				printAllJobs(jobList);
+			}
 			execute(args, backgroundCheck, unmodLine, jobList);
 			free(line);
 			backgroundCheck = 0;
+		}
+		else {
+			
 		}
 
 	
@@ -86,7 +93,32 @@ int main() {
 
 }
 
+
 void printDoneJobs(ListPtr list)
+{
+	if (list->size == 0) return;
+
+	NodePtr temp = list->head;
+
+	while (temp->next != list->head){
+		if (jobDone(temp->obj)){
+			printJobStatus(temp->obj);
+			temp = temp->prev;
+			removeNode(list, temp->next);
+		}
+		temp = temp->next;
+	}	
+	
+	if (jobDone(temp->obj)){
+		printJobStatus(temp->obj);
+		removeNode(list, temp);
+	}
+
+}
+
+
+
+void printAllJobs(ListPtr list)
 {
 	if (list->size == 0) return;
 	NodePtr temp = list->head;
@@ -129,7 +161,7 @@ void showVersion(char** args)
 }
 
 int parseString(char* linea, char** argz){
-	printf("made it in to parseString\n");
+	//printf("made it in to parseString\n");
 	int count = -1;
 	int isAnArgument;
 
@@ -159,7 +191,7 @@ int parseString(char* linea, char** argz){
 
 void execute (char** args, int background, char* unmodLine, ListPtr list){
 	
-	printf("made it in to execute\n");
+	//printf("made it in to execute\n");
 	
 	pid_t	pid;
 	int	status;
@@ -182,18 +214,18 @@ void execute (char** args, int background, char* unmodLine, ListPtr list){
 		if (!background)
 			while (wait(&status) != pid);
 		else {
-			printf("made it to makingjob\n");		
+			//printf("made it to makingjob\n");		
 			//job newJob = { (list->size == 0) ? 1 : ((job*) (list->tail->obj))->jobNumber + 1 , 
 			//		pid, 
 			//		unmodLine };
 			int num = (list->size == 0) ? 1 : ((JobPtr) (list->tail->obj))->jobNumber + 1; 
-			printf("made number\n");
+			//printf("made number\n");
 			JobPtr tempJob = createJob(num, pid, unmodLine);
-			printf("made job\n");		
+			//printf("made job\n");		
 			NodePtr node = createNode(tempJob);
-			printf("made node\n");
+			//printf("made node\n");
 			addAtRear(list,node); 			
-			char* tempString = jobToString((JobPtr)list->head->obj); 
+			char* tempString = jobToString(tempJob); 
 			printf("%s\n", tempString);
 			free(tempString);
 		}	
