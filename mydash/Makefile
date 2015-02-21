@@ -13,7 +13,7 @@ testcode: libs dash
 	cd testsuite; make
 
 clean:
-	cd libsrc; make clean
+	cd libsrc; make installclean
 	cd testsuite; make clean
 	cd dash; make clean
 	rm -f mydash

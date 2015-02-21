@@ -26,6 +26,7 @@ void freeJob(const void *jobObj)
 
 	JobPtr object = (JobPtr) jobObj;
 	free(object->command);
+	free(object);
 
 
 }
@@ -43,13 +44,10 @@ char *jobToString(const void *jobObj)
 {
 	JobPtr object = (JobPtr) jobObj;
 
-
-	//printf("inside tostring, starting sprintf: %s\n", object->command);
 	char* theString =(char*) malloc (sizeof(char) * (strlen(object->command) + 100));
-	//printf("after malloc\n");
+
 	sprintf(theString,"[%d] %d %s", object->jobNumber, (int) object->pid, object->command); 
 
-	//printf("past sprintf in tostring\n");
 	return theString;
 }
 
@@ -70,11 +68,11 @@ void printJobStatus(const void *jobObj)
 	JobPtr object = (JobPtr) jobObj;
 	if (jobDone(jobObj)){
 		
-		printf("[%d] Done %s\n", object->jobNumber, object->command); 
+		printf("[%d] Done %s \n", object->jobNumber, object->command); 
 	} 
 	else {
 
-		printf("[%d] Running %s\n", object->jobNumber, object->command); 
+		printf("[%d] Running %s \n", object->jobNumber, object->command); 
 	}
 
 }
@@ -84,7 +82,6 @@ int jobDone(const void *jobObj){
 	JobPtr object = (JobPtr) jobObj;
 	int statusPtr = NULL;
 	return waitpid(object->pid, &statusPtr, WNOHANG); 	
-	//return WIFEXITED(statusPtr);
 
 
 }
