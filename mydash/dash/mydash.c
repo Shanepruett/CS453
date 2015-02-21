@@ -18,50 +18,60 @@
 int main()
 {
     char *line;
-    char *DASH_PROMPT = "mydash>";
 
+    // Get environment, its its set then use that as prompt
+    char *env = getenv("DASH_PROMPT");
+    char *DASH_PROMPT = env == NULL ? "mydash>" : env;
+
+    // number of args will be limited to 2048 + null terminator
     char *args[2049];
     int backgroundCheck = 0;
 
-
+    // used to retain original commands with ampersand
     char *unmodLine = "";
 
     ListPtr jobList = createList(&jobEqual, &jobToString, &freeJob);
 
     using_history();
     while ((line = readline(DASH_PROMPT))) {
-	if (line == NULL){
-		break;	   
+	if (line == NULL) {
+	    break;
 	}
-        printDoneJobs(jobList);
+	printDoneJobs(jobList);	// after each enter, print Done jobs which are removed from list
 	if (*line) {
 	    add_history(line);
+	    // if its a background process
 	    if (line[strlen(line) - 1] == '&') {
-		backgroundCheck = 1;
+		backgroundCheck = 1;	// signifies a background process
 
 		unmodLine = malloc(sizeof(char) * (strlen(line) + 1));
 		strcpy(unmodLine, line);
 
 		line[strlen(line) - 1] = '\0';
 	    }
+	    // parse the line in to args executable by execvp
 	    parseString(line, args);
+
 	    if (strcmp(args[0], "exit") == 0)
 		break;
+
 	    if (strcmp(args[0], "cd") == 0) {
 		changeDirectory(args);
 		free(line);
 		continue;
 	    }
+
 	    if (strcmp(args[0], "-v") == 0) {
 		printf("Version: %s \n", git_version());
 		free(line);
 		continue;
 	    }
+
 	    if (strcmp(args[0], "jobs") == 0) {
 		printAllJobs(jobList);
 	    }
-	    execute(args, backgroundCheck, unmodLine, jobList);
 
+	    execute(args, backgroundCheck, unmodLine, jobList);
 	    free(line);
 	    backgroundCheck = 0;
 	}
@@ -71,7 +81,7 @@ int main()
 
     freeList(jobList);
     free(line);
-    return(0);
+    return (0);
 }
 
 
@@ -86,6 +96,7 @@ void printDoneJobs(ListPtr list)
 	if (jobDone(temp->obj)) {
 	    printJobStatus(temp->obj);
 	    temp = temp->prev;
+	    // free the return Node
 	    freeNode(removeNode(list, temp->next), list->freeObject);
 	}
 	temp = temp->next;
@@ -104,6 +115,7 @@ void printAllJobs(ListPtr list)
 {
     if (list->size == 0)
 	return;
+
     NodePtr temp = list->head;
 
     while (temp->next != list->head) {
@@ -123,6 +135,7 @@ void changeDirectory(char **args)
     if (args[1]) {
 	chdir(args[1]);
     } else {
+	// if there is no arguments then set to homedirectory
 	struct passwd *pw = getpwuid(getuid());
 	const char *homedir = pw->pw_dir;
 	chdir(homedir);
@@ -133,9 +146,9 @@ void changeDirectory(char **args)
 
 int parseString(char *linea, char **argz)
 {
-    //printf("made it in to parseString\n");
+
     int count = -1;
-    int isAnArgument;
+    int isAnArgument;		// not always an argument
 
     if (!linea)
 	return 0;
@@ -153,18 +166,16 @@ int parseString(char *linea, char **argz)
 	}
 	if (isAnArgument)
 	    count++;
-	else
-	    *argz-- = '\0';
+	else			// not an argument so must set current place as null
+	    *argz-- = '\0';	// and then decrement pointer
     }
-    //printf("%d arguments",count);
-    *argz = '\0';
+
+    *argz = '\0';		// final null terminator
     return count;
 }
 
 void execute(char **args, int background, char *unmodLine, ListPtr list)
 {
-
-    //printf("made it in to execute\n");
 
     pid_t pid;
     int status;
@@ -181,18 +192,15 @@ void execute(char **args, int background, char *unmodLine, ListPtr list)
 	if (!background) {
 	    while (wait(&status) != pid);
 	} else {
-	    //printf("made it to makingjob\n");             
-	    //job newJob = { (list->size == 0) ? 1 : ((job*) (list->tail->obj))->jobNumber + 1 , 
-	    //              pid, 
-	    //              unmodLine };
+	    // is a background process
 	    int num =
 		(list->size ==
 		 0) ? 1 : ((JobPtr) (list->tail->obj))->jobNumber + 1;
-	    //printf("made number\n");
+
 	    JobPtr tempJob = createJob(num, pid, unmodLine);
-	    //printf("made job\n");         
+
 	    NodePtr node = createNode(tempJob);
-	    //printf("made node\n");
+
 	    addAtRear(list, node);
 	    char *tempString = jobToString(tempJob);
 	    printf("%s\n", tempString);
