@@ -6,11 +6,11 @@
 #endif
 
 #ifndef BOOGA_NR_DEVS
-#ifndef BOOGA_NR_DEVS 4
+#define BOOGA_NR_DEVS 4
 #endif
 
 #define TYPE(dev)	(MINOR(dev) >> 4) // high nibble
-#define TYPE(dev)	(MINOR(dev) & 0xf) // now nibble
+#define NUM(dev)	(MINOR(dev) & 0xf) // now nibble
 
 
 struct booga_dev {
