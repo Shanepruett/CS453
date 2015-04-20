@@ -1,0 +1,102 @@
+****************
+* Project 4/Booga Device Driver
+* CS453: Operating Systems 
+* 4/19/1015
+* Shane Pruett
+**************** 
+
+OVERVIEW:
+
+ It is with a heavy heart that I must admit defeat by
+ this project. This project is supposed to be a simple character
+ driver that supports the open, read, and write operations.
+ At the moment the only thing this driver can do is load and unload
+ without an error that I've noticed. The rest of the operations 
+ are merely stubs of their potential glory. I discuss some of the
+ issues I had in the Discussion section. 
+
+
+INCLUDED FILES:
+
+ booga.c	This is the main file that has the device driver
+ booga.h	This is the header file for booga.c
+ booga_load	This is the provided loader for the driver.
+ booga_unload	This is the provided unloader for the driver.
+ booga.wav	This was provided, I'm assuming it's a sound file.
+ Makefile	This is the makefile used compile the driver
+ README		This document.
+ booga-test.c	This is the provided test file, it is unedited.
+
+
+BUILDING AND RUNNING:
+
+ To compile this application type the follow from the terminal:
+ $ make
+
+ To load the device driver type the following from the terminal:
+ $ sudo ./booga_load
+
+ To unload the device driver type the following from the terminal:
+ $ sudo ./booga_unload
+
+ To test the device driver while it is loaded type the following:
+ $  test-booga <minor number> <buffersize> <read|write>
+ 
+
+PROGRAM DESIGN:
+
+ My device driver barely loads correctly. Currently it is missing
+ the semamphore, though technically it doesn't need one yet because
+ the device driver doesn't have any updating structures yet.
+
+ This is clearly one of the areas where I struggled the most.
+ I don't understand how the device driver is supposed to print the
+ streams of characters when using the read option without calling
+ standard C library functions. 
+
+ TESTING:
+
+ I test my program by loading it and unloading it and using the 
+ /sbin/lsmod command to check it if was loaded and unloaded. I also
+ tested several ways of implementing the read function to return
+ a stream. It's not done using the printk function. When i tried
+ using the buf parameter in from the function call My system ended up
+ crying and needing restarted. 
+
+ My device driver does not work. Despite my best efforts to work up
+ slowly all it can do is load and unload. Which by the way I celebrated
+ hardily. 
+
+
+DISCUSSION:
+ 
+ This might be the first time I've been utterly defeated by a project
+ at every step of the way.
+
+ My first major hangup was that I didn't make enough time early on, and
+ I didn't have enough time later on either. 
+
+ My second major hangup was that I spent an entire day rebuilding my 
+ virtual machine kernel after it innexplicably decided to no longer work
+ on my computer. 
+
+ My third hangup was that I simply don't have a good understanding of what
+ is happening with this device driver. I don't understand what a major and 
+ a minor are. I think the /sbin/lsmod command is similar to a task manager,
+ or atleast that's what I hope is true. I'm confused how the read function
+ called in the test file has only three parameters but the read function in
+ my device driver has four. I don't understand how device driver has four
+ minors (though i don't understand what that is) even though I never actually
+ create the four minors. I do however know it IS doing it because when I spent
+ four hours trying to get my device drivers to load I kept getting an error
+ when I loaded them that said the four minors didn't exist. Turns out I was
+ only missing the functions at the end of the file that set the init and exit
+ function. 
+
+ My current goal is to figure out what all of this means before the next project
+ is leaves me in the dust.
+ 
+ 
+EXTRA CREDIT:
+
+ None.

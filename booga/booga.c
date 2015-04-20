@@ -51,7 +51,7 @@ static struct file_operations booga_fops = {
 
 static void __exit booga_exit (void)
 {	 
-	remove_proc_entry("device/booga", NULL);
+//	remove_proc_entry("device/booga", NULL);
 	
 	unregister_chrdev(booga_major, "booga");
 	kfree (booga_device);
@@ -77,17 +77,13 @@ static int booga_release (struct inode *inode, struct file *filp)
 static ssize_t booga_read (struct file *filp, char *buf, size_t count, loff_t *f_pos)
 {
 	// update stats proc info
-	
+	char choice;
 	// random phrase
 	char randvalue;
 	get_random_bytes(&randvalue, 1);
-	char choice = (randvalue & 0x7F) % 4;
+	choice = (randvalue & 0x7F) % 4;
 
-	//printk(
-	while (buf != '\0') {
-		printk("a");
-		buf++;
-	}
+	printk("count= %d\n",(int) count);
 
 	return 0;
 }
